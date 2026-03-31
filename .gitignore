@@ -1,5 +1,7 @@
 *.asv
 .DS_Store
+CLAUDE.md
+A324_project_state.md
 # gitignore for python 
 
 *.pyc 

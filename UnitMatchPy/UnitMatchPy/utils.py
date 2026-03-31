@@ -114,7 +114,7 @@ def load_good_waveforms(wave_paths, unit_label_paths, param, good_units_only=Tru
         for i in range(len(unit_label_paths)):
             if os.path.split(unit_label_paths[0])[1] == 'cluster_bc_unitType.tsv':
                 unit_label = load_tsv(unit_label_paths[i])
-                tmp_idx = np.argwhere(np.isin(unit_label[:, 1], ['GOOD', 'NON-SOMA GOOD']))
+                tmp_idx = np.argwhere(np.isin(unit_label[:, 1], ['GOOD', 'NON-SOMA GOOD', 'NON-SOMA GOOD DENDRITIC']))
             else:
                 unit_label = load_tsv(unit_label_paths[i])
                 tmp_idx = np.argwhere(unit_label[:, 1]=='good')
@@ -207,7 +207,7 @@ def get_good_units(unit_label_paths, good = True):
         if os.path.split(unit_label_paths[0])[1] == 'cluster_bc_unitType.tsv':
             unit_label = load_tsv(unit_label_paths[i])
             if good == True:
-                tmp_idx = np.argwhere(np.isin(unit_label[:,1],['GOOD','NON-SOMA GOOD']))
+                tmp_idx = np.argwhere(np.isin(unit_label[:,1],['GOOD','NON-SOMA GOOD','NON-SOMA GOOD DENDRITIC']))
             else:
                 tmp_idx = unit_label[:,0].astype(np.int32)
             tmp_idx = tmp_idx[:, np.newaxis] # keep the array shape consistent between different methods
@@ -452,7 +452,7 @@ def fill_missing_pos(KS_dir, n_channels):
     empty_idx = np.unique(np.argwhere(np.isnan(channel_pos))[:,0])
 
     #check to see if there are the same amount of empty positions as found positions
-    if missed_pos_idx.shape[0] == empty_idx.shape[0]:
+    if missed_pos_idxs.shape[0] == empty_idx.shape[0]:
         #go through each estimated missing positions
         for idx in missed_pos_idxs:
             missed_pos = np.vstack(channel_pos_new)[idx].squeeze()
