@@ -410,8 +410,21 @@ def fill_missing_pos(KS_dir, n_channels):
     path_tmp = os.path.join(KS_dir, 'channel_map.npy')
     channel_map = np.load(path_tmp).squeeze()
 
-    channel_pos = np.full((n_channels,2), np.nan)
-    channel_pos[channel_map,:] = pos
+    # If channel_positions already covers all hardware channels, use it directly.
+    # If it's sparse but matches channel_map, place positions using the map and
+    # fill inactive channels with dummy positions. Both cases skip the
+    # interpolation logic below, which fails for sparse NP1.0 probes.
+    if pos.shape[0] == n_channels:
+        return pos.copy()
+
+    channel_pos = np.full((n_channels, 2), np.nan)
+    channel_pos[channel_map, :] = pos
+
+    if pos.shape[0] == len(channel_map):
+        inactive = np.isnan(channel_pos[:, 0])
+        channel_pos[inactive, 0] = np.nanmedian(channel_pos[:, 0])
+        channel_pos[inactive, 1] = np.nanmin(channel_pos[:, 1]) - 10000
+        return channel_pos
 
     channel_pos_new = []
     #get the unique x positions
